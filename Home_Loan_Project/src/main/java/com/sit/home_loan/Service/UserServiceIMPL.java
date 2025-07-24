@@ -50,7 +50,7 @@ public class UserServiceIMPL implements UserServiceI {
 		String passencrypt = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
 		user.setPassword(passencrypt);
 
-		User saveduser = ur.save(user);
+		ur.save(user);
 //
 //		if (user.getRole() == Roles.Customer) {
 //			Customers customer = new Customers();
@@ -60,11 +60,11 @@ public class UserServiceIMPL implements UserServiceI {
 		
 	    if (user.getRole() == Roles.Customer) {
 	        Customers customer = new Customers();
-	        customer.setUser(saveduser); // ✅ Use the saved user with ID
-	        customer.setName(saveduser.getName());      // Optional
-	        customer.setEmail(saveduser.getEmail());    // Optional
-	        customer.setPhone_no(saveduser.getPhone_no());
-	        customer.setAddress(saveduser.getAddress());
+	        customer.setUser(user);
+	        customer.setFull_name(user.getFull_name());
+	        customer.setEmail(user.getEmail()); 
+	        customer.setPhone_no(user.getPhone_no());
+	        customer.setAddress(user.getAddress());
 	        cr.save(customer);
 	    }
 
@@ -91,10 +91,6 @@ public class UserServiceIMPL implements UserServiceI {
 		if (!role.equals(user.getRole())) {
 			throw new RuntimeException("Invalid role :( Try again ");
 		}
-		
-	    if (user.getRole() == Roles.Customer) {
-	        Customers customer = cr.findByUserId(user.getId()).orElseThrow(() -> new RuntimeException("Customer profile not found"));
-	    }
 		return user;
 	}
 

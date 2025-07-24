@@ -28,8 +28,7 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String username;
-	private String name;
+	private String full_name;
 	
 	@Column(unique = true)
 	private String email;
@@ -41,6 +40,7 @@ public class User {
 	private Roles role;
 	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonBackReference
 	private Customers customer;
 	
 }

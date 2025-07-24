@@ -26,7 +26,7 @@ public class Customers {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long cust_id;
-	private String name;
+	private String full_name;
 	
 	@Column(unique = true)
 	private String email;
@@ -37,6 +37,7 @@ public class Customers {
 	private String pan_card;
 	private String account_number;
 	private String ifsc_code;
+	private String Kyc_Status;
 	private Double montly_income;
 	private String city;
 	private String State;
@@ -46,9 +47,9 @@ public class Customers {
 	@OneToOne(cascade = CascadeType.ALL)
 //	@MapsId
 	@JoinColumn( name = "user_id")
+	@JsonManagedReference
 	private User user;
 	
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
 	private List<LoanAppliaction> loanApplications;
-
 }

@@ -2,8 +2,6 @@ package com.sit.home_loan.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.sit.home_loan.DTO.CustomerProfileDTO;
 import com.sit.home_loan.DTO.LoanApplicationDTO;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanAppliaction;
@@ -31,7 +29,7 @@ public class CustomerController {
 	CustomerI ci;
 	
 	@GetMapping("/profile")
-    public CustomerProfileDTO getMyProfile(@RequestParam String email) {
+    public Customers getMyProfile(@RequestParam String email) {
         return ci.getProfileByEmail(email);
     }
 
@@ -46,12 +44,6 @@ public class CustomerController {
     	System.out.println(update_cust);
         ci.editProfile(update_cust);
         return "Profile edit Successfully..";
-    }
+    } 
     
-//	@GetMapping(path="my_appliaction")
-//	public String getMethodName(@RequestParam String param) {
-//		return new String();
-//	}
-//	
-
 }

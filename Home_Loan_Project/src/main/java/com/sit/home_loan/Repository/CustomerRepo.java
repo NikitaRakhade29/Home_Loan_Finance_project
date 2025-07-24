@@ -10,6 +10,5 @@ import com.sit.home_loan.Model.User;
 
 @Repository
 public interface CustomerRepo extends JpaRepository<Customers, Long> {
-	Optional<Customers> findByUserId(Long userId);
 	Optional<Customers> findByUserEmail(String email);
 }

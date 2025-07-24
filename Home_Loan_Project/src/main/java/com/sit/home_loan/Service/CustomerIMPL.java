@@ -6,8 +6,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.sit.home_loan.DTO.CustomerProfileDTO;
 import com.sit.home_loan.DTO.LoanApplicationDTO;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanAppliaction;
@@ -27,30 +25,17 @@ public class CustomerIMPL implements CustomerI {
 
 	@Autowired
 	LoanApplicationRepo lr;
-	
+
 	@Override
-    public CustomerProfileDTO getProfileByEmail(String email) {
-        Customers customer = cr.findByUserEmail(email)
-            .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
+	public Customers getProfileByEmail(String email) {
 
-        CustomerProfileDTO dto = new CustomerProfileDTO();
-        dto.setName(customer.getName());
-        dto.setEmail(customer.getEmail());
-        dto.setPhone_no(customer.getPhone_no());
-        dto.setAddress(customer.getAddress());
-        dto.setEmployment_type(customer.getEmployment_type());
-        dto.setAadhaar_card(customer.getAadhaar_card());
-        dto.setPan_card(customer.getPan_card());
-        dto.setAccount_number(customer.getAccount_number());
-        dto.setIfsc_code(customer.getIfsc_code());
-        dto.setMontly_income(customer.getMontly_income());
-        dto.setCity(customer.getCity());
-        dto.setState(customer.getState());
-        dto.setPincode(customer.getPincode());
-        dto.setCibil(customer.getCibil());
-
-        return dto;
-    }
+		Optional<Customers> customer = cr.findByUserEmail(email);
+		if (customer.isPresent()) {
+			return customer.get();
+		}else{
+			throw new RuntimeException("Customer not found with this email" +email);
+		}
+	}
 
 	@Override
 	public Customers applyloan(LoanApplicationDTO loanDTO, Long customerId) {
