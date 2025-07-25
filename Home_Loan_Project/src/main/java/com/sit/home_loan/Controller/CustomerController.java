@@ -34,9 +34,8 @@ public class CustomerController {
     }
 
     @PostMapping(path="/apply-loan")
-    public String applyLoan(@RequestBody LoanApplicationDTO loanDTO, @RequestParam Long customerId) {
-        ci.applyloan(loanDTO, customerId);
-        return "Loan application submitted successfully. ";
+    public String applyLoan(@RequestBody LoanApplicationDTO loanDTO) {
+        return ci.applyForloan(loanDTO);
     }
     
     @PostMapping(path="/edit")
@@ -45,5 +44,6 @@ public class CustomerController {
         ci.editProfile(update_cust);
         return "Profile edit Successfully..";
     } 
+    
     
 }

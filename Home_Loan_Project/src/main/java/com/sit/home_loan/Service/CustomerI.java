@@ -5,7 +5,8 @@ import com.sit.home_loan.DTO.LoanApplicationDTO;
 import com.sit.home_loan.Model.Customers;
 
 public interface CustomerI {
-	Customers applyloan(LoanApplicationDTO loanDTO, Long customerId);
-	Customers editProfile(Customers update_cust);
+
 	Customers getProfileByEmail(String email);
+	String applyForloan(LoanApplicationDTO loanDTO);
+	Customers editProfile(Customers update_cust);
 }

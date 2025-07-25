@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 @Data
 public class LoanApplicationDTO {
+	private String email;
     private Double loan_amount;
     private Integer loan_tenure;
     private String loan_purpose;
@@ -16,4 +17,5 @@ public class LoanApplicationDTO {
     private String account_no;
     private String ifsc_code;
     private String account_holder_name;
+    private String application_reject_reason;
 }

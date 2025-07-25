@@ -42,10 +42,9 @@ public class Customers {
 	private String city;
 	private String State;
 	private String pincode;
-	private Integer cibil;
+	private Double cibil;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-//	@MapsId
 	@JoinColumn( name = "user_id")
 	@JsonManagedReference
 	private User user;
