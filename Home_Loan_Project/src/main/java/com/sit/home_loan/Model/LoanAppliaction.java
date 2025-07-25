@@ -34,7 +34,7 @@ public class LoanAppliaction {
 	private String employment_type;
 	private String employment_name;
 	private Double monthly_income;
-	private Double Cibil;
+	private Integer Cibil;
 	private String account_no;
 	private String ifsc_code;
 	private String account_holder_name;

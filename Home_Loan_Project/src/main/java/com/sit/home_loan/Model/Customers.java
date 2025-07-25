@@ -42,7 +42,7 @@ public class Customers {
 	private String city;
 	private String State;
 	private String pincode;
-	private Double cibil;
+	private Integer cibil;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn( name = "user_id")

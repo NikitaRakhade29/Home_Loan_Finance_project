@@ -14,6 +14,7 @@ public class LoanApplicationDTO {
     private String employment_type;
     private String employment_name;
     private Double monthly_income;
+    private Integer cibil;
     private String account_no;
     private String ifsc_code;
     private String account_holder_name;

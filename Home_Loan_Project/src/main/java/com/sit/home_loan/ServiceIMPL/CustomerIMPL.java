@@ -1,4 +1,4 @@
-package com.sit.home_loan.Service;
+package com.sit.home_loan.ServiceIMPL;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +14,7 @@ import com.sit.home_loan.Model.User;
 import com.sit.home_loan.Repository.CustomerRepo;
 import com.sit.home_loan.Repository.LoanApplicationRepo;
 import com.sit.home_loan.Repository.UserRepo;
+import com.sit.home_loan.Service.CustomerI;
 
 @Service
 public class CustomerIMPL implements CustomerI {
@@ -64,7 +65,7 @@ public class CustomerIMPL implements CustomerI {
 	        customer.setIfsc_code(loanDTO.getIfsc_code());
 
 	        // Generate CIBIL score between 650 and 850
-	        Double cibilScore = 650 + (Math.random() * 200);
+	        int cibilScore = (int) (650 + (Math.random() * 200));
 	        customer.setCibil(cibilScore);
 	        cr.save(customer);
 
@@ -88,7 +89,7 @@ public class CustomerIMPL implements CustomerI {
 
 	        lr.save(loan);
 
-	        return "Loan application submitted successfully. CIBIL Score: " + Math.round(cibilScore);
+	        return "Loan application submitted successfully. CIBIL Score: " + cibilScore;
 
 	    } catch (Exception e) {
 	        e.printStackTrace();

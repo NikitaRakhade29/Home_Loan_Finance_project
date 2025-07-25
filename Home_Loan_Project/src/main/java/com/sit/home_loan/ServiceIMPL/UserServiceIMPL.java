@@ -1,4 +1,4 @@
-package com.sit.home_loan.Service;
+package com.sit.home_loan.ServiceIMPL;
 
 import java.util.Optional;
 
@@ -11,6 +11,7 @@ import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.User;
 import com.sit.home_loan.Repository.CustomerRepo;
 import com.sit.home_loan.Repository.UserRepo;
+import com.sit.home_loan.Service.UserServiceI;
 
 @Service
 public class UserServiceIMPL implements UserServiceI {
