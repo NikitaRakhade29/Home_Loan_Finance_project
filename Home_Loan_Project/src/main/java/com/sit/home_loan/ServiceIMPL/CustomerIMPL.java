@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.sit.home_loan.DTO.LoanApplicationDTO;
+import com.sit.home_loan.DTO.LoanApplicationDetailsDTO;
 import com.sit.home_loan.Enum.ApplicationStatus;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanAppliaction;
@@ -50,9 +51,9 @@ public class CustomerIMPL implements CustomerI {
 
 	        Customers customer = customerOpt.get();
 
-	        // Check if customer has already applied
-	        List<LoanAppliaction> existingApplications = lr.findByCustomerEmail(loanDTO.getEmail());
-	        if (!existingApplications.isEmpty()) {
+	        // Check for existing applications
+	        List<LoanAppliaction> existing = lr.findByCustomerEmail(loanDTO.getEmail());
+	        if (!existing.isEmpty()) {
 	            return "You have already applied for a loan.";
 	        }
 
@@ -64,12 +65,12 @@ public class CustomerIMPL implements CustomerI {
 	        customer.setAccount_number(loanDTO.getAccount_no());
 	        customer.setIfsc_code(loanDTO.getIfsc_code());
 
-	        // Generate CIBIL score between 650 and 850
+	        // Generate CIBIL
 	        int cibilScore = (int) (650 + (Math.random() * 200));
 	        customer.setCibil(cibilScore);
 	        cr.save(customer);
 
-	        // Prepare loan application
+	        // Populating the data loan application
 	        LoanAppliaction loan = new LoanAppliaction();
 	        loan.setLoan_amount(loanDTO.getLoan_amount());
 	        loan.setLoan_tenure(loanDTO.getLoan_tenure());
@@ -93,41 +94,88 @@ public class CustomerIMPL implements CustomerI {
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return "An error occurred while applying for the loan. Please try again later.";
+	        return "An error occurred while applying for the loan.";
 	    }
 	}
 
+
 	@Override
-	public Customers editProfile(Customers update_cust) {
-		Customers add_data = cr.findById(update_cust.getCust_id())
-				.orElseThrow(() -> new RuntimeException("customer id not found"));
-		if (update_cust.getEmployment_type() != null) {
-			add_data.setEmployment_type(update_cust.getEmployment_type());
-		}
-		if (update_cust.getAadhaar_card() != null) {
-			add_data.setAadhaar_card(update_cust.getAadhaar_card());
-		}
-		if (update_cust.getPan_card() != null) {
-			add_data.setPan_card(update_cust.getPan_card());
-		}
-		if (update_cust.getAccount_number() != null) {
-			add_data.setAccount_number(update_cust.getAccount_number());
-		}
-		if (update_cust.getIfsc_code() != null) {
-			add_data.setIfsc_code(update_cust.getIfsc_code());
-		}
-		if (update_cust.getMontly_income() != null) {
-			add_data.setMontly_income(update_cust.getMontly_income());
-		}
-		if (update_cust.getCity() != null) {
-			add_data.setCity(update_cust.getCity());
-		}
-		if (update_cust.getState() != null) {
-			add_data.setState(update_cust.getState());
-		}
-		if (update_cust.getPincode() != null) {
-			add_data.setPincode(update_cust.getPincode());
-		}
-		return cr.save(add_data);
+	public void editProfileByEmail(String email, Customers updateCust) {
+	    Customers existingCustomer = cr.findByUserEmail(email).orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
+
+	    if (updateCust.getEmployment_type()!=null) {
+	        existingCustomer.setEmployment_type(updateCust.getEmployment_type());
+	    }
+	    if (updateCust.getAadhaar_card()!=null) {
+	        existingCustomer.setAadhaar_card(updateCust.getAadhaar_card());
+	    }
+	    if (updateCust.getPan_card()!=null) {
+	        existingCustomer.setPan_card(updateCust.getPan_card());
+	    }
+	    if (updateCust.getAccount_number()!=null) {
+	        existingCustomer.setAccount_number(updateCust.getAccount_number());
+	    }
+	    if (updateCust.getIfsc_code()!=null) {
+	        existingCustomer.setIfsc_code(updateCust.getIfsc_code());
+	    }
+	    if (updateCust.getMontly_income()!=null) {
+	        existingCustomer.setMontly_income(updateCust.getMontly_income());
+	    }
+	    if (updateCust.getCity()!=null) {
+	        existingCustomer.setCity(updateCust.getCity());
+	    }
+	    if (updateCust.getState()!=null) {
+	        existingCustomer.setState(updateCust.getState());
+	    }
+	    if (updateCust.getPincode()!=null) {
+	        existingCustomer.setPincode(updateCust.getPincode());
+	    }
+	    cr.save(existingCustomer);
 	}
+
+
+	@Override
+	public LoanApplicationDetailsDTO getLoanApplicationsByEmail(String email) {
+	    List<LoanAppliaction> applications = lr.findByCustomerEmail(email);
+
+	    if (applications.isEmpty()) {
+	        throw new RuntimeException("No loan applications found for email: " + email);
+	    }
+
+	    // Get the latest loan application till last and avoid exception
+	    LoanAppliaction loan = applications.get(applications.size() - 1);
+
+	    LoanApplicationDetailsDTO dto = new LoanApplicationDetailsDTO();
+	    dto.setEmail(loan.getCustomer().getUser().getEmail());
+	    dto.setLoan_amount(loan.getLoan_amount());
+	    dto.setLoan_tenure(loan.getLoan_tenure());
+	    dto.setLoan_purpose(loan.getLoan_purpose());
+	    dto.setPan_no(loan.getPan_no());
+	    dto.setAadhar(loan.getAadhar());
+	    dto.setEmployment_type(loan.getEmployment_type());
+	    dto.setEmployment_name(loan.getEmployment_name());
+	    dto.setMonthly_income(loan.getMonthly_income());
+	    dto.setCibil(loan.getCibil());
+	    dto.setAccount_no(loan.getAccount_no());
+	    dto.setIfsc_code(loan.getIfsc_code());
+	    dto.setAccount_holder_name(loan.getAccount_holder_name());
+	    dto.setApplication_rejection_reason(loan.getApplication_rejection_reason());
+	    dto.setApplication_date(loan.getApplication_date());
+	    dto.setApplicationstatus(loan.getApplicationstatus());
+
+	    return dto;
+	}
+	
+	@Override
+	public String deleteLoanApplicationByEmail(String email) {
+	    List<LoanAppliaction> applications = lr.findByCustomerEmail(email);
+
+	    if (applications == null || applications.isEmpty()) {
+	        throw new RuntimeException("No loan application found for email: " + email);
+	    }
+	    lr.deleteAll(applications);
+
+	    return "Loan application deleted successfully by " + email;
+	}
+
 }

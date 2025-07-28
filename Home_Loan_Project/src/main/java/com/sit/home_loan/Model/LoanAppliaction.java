@@ -44,7 +44,8 @@ public class LoanAppliaction {
 	@Enumerated(EnumType.STRING)
 	private ApplicationStatus applicationstatus;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "customer_id")
+	@JsonBackReference
 	private Customers customer;
 }
