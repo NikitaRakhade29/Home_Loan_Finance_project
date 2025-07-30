@@ -18,8 +18,10 @@ import com.sit.home_loan.Model.LoanApplication;
 import com.sit.home_loan.Model.User;
 import com.sit.home_loan.Repository.CustomerRepo;
 import com.sit.home_loan.Repository.LoanApplicationRepo;
+import com.sit.home_loan.Repository.LoanStageHistoryRepo;
 import com.sit.home_loan.Repository.UserRepo;
 import com.sit.home_loan.Service.CustomerI;
+import com.sit.home_loan.Service.LoanStageHistoryI;
 
 @Service
 public class CustomerIMPL implements CustomerI {
@@ -32,6 +34,9 @@ public class CustomerIMPL implements CustomerI {
 
 	@Autowired
 	LoanApplicationRepo lr;
+
+	@Autowired
+	private LoanStageHistoryI loanStageHistoryService;
 
 	@Override
 	public Customers getProfile(String email) {
@@ -93,6 +98,10 @@ public class CustomerIMPL implements CustomerI {
 			loan.setApplicationStatus(ApplicationStatus.Pending);
 
 			lr.save(loan);
+
+			loanStageHistoryService.logStage(loan.getId(), customer.getUser().getFull_name(),
+					customer.getUser().getRole().name(), ApplicationStatus.Pending.name(),
+					"loan applied with Cibil: " + cibilScore);
 
 			return "Loan application submitted successfully. CIBIL Score: " + cibilScore;
 
@@ -175,6 +184,5 @@ public class CustomerIMPL implements CustomerI {
 		lr.deleteAll(applications);
 		return "Loan application deleted successfully by " + email;
 	}
-	
 
 }
