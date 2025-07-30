@@ -32,6 +32,5 @@ public class LoanOfficerController {
 			@RequestParam boolean reject, @RequestParam(required = false) String reasonIfReject) {	
 		return lor.reviewCibilDecision(applicationId,officerEmail,reject,reasonIfReject);
 	}
-	
 
 }
