@@ -21,7 +21,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name="Loan-Application")
-public class LoanAppliaction {
+public class LoanApplication {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class LoanAppliaction {
 	private LocalDate application_date;
 	
 	@Enumerated(EnumType.STRING)
-	private ApplicationStatus applicationstatus;
+	private ApplicationStatus applicationStatus;
 
 	@ManyToOne
 	@JoinColumn(name = "customer_id")

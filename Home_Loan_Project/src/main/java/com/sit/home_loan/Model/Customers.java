@@ -51,5 +51,7 @@ public class Customers {
 	
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	private List<LoanAppliaction> loanApplications;
+	private List<LoanApplication> loanApplications;
+	
+
 }
