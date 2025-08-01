@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 //import com.sit.home_loan.DTO.CustomerProfileDTO;
 import com.sit.home_loan.DTO.LoanApplicationDTO;
 import com.sit.home_loan.DTO.LoanApplicationDetailsDTO;
+import com.sit.home_loan.Enum.DocumentType;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanApplication;
 
@@ -17,6 +18,7 @@ public interface CustomerI {
 	List<LoanApplicationDetailsDTO> getLoanApplications(String email);
 	String deleteLoanApplication(String email);
 	void editProfileByEmail(String email, Customers updateCust);
+	String uploadDocument(MultipartFile file, String email,DocumentType documentType);
 
 
 }

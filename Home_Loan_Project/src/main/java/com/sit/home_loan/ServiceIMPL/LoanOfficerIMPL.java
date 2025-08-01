@@ -15,6 +15,7 @@ import com.sit.home_loan.Model.User;
 import com.sit.home_loan.Repository.LoanApplicationRepo;
 import com.sit.home_loan.Repository.UserRepo;
 import com.sit.home_loan.Service.LoanOfficerI;
+import com.sit.home_loan.Service.LoanStageHistoryI;
 
 @Service
 public class LoanOfficerIMPL implements LoanOfficerI {
@@ -25,9 +26,12 @@ public class LoanOfficerIMPL implements LoanOfficerI {
 	@Autowired
 	UserRepo ur;
 
+	@Autowired
+	LoanStageHistoryI lhi;
+
 	@Override
 	public List<LoanApplicationDetailsDTO> getAllPendingApplications() {
-		List<LoanApplication> applications = lr.findByApplicationStatus(ApplicationStatus.Pending);
+		List<LoanApplication> applications = lr.findByApplicationStatus(ApplicationStatus.PENDING);
 
 		List<LoanApplicationDetailsDTO> dtoList = new ArrayList<>();
 		for (LoanApplication app : applications) {
@@ -61,7 +65,7 @@ public class LoanOfficerIMPL implements LoanOfficerI {
 		}
 
 		LoanApplication app = application.get();
-		if (app.getApplicationStatus() != ApplicationStatus.Pending) {
+		if (app.getApplicationStatus() != ApplicationStatus.PENDING) {
 			return "Application is not in pending state";
 		}
 
@@ -70,16 +74,22 @@ public class LoanOfficerIMPL implements LoanOfficerI {
 			return "officer not found";
 		}
 
+		User officer = officers.get();
+
 		if (reject) {
-			app.setApplicationStatus(ApplicationStatus.Rejected);
+			app.setApplicationStatus(ApplicationStatus.REJECTED);
 			app.setApplication_rejection_reason(reasonIfReject);
+			lhi.logStage(app.getId(), officer.getFull_name(), officer.getRole().name(),
+					ApplicationStatus.REJECTED.name(), "loan rejacted due to: " + reasonIfReject);
+			lr.save(app);
+			return "Application Rejected!";
 		} else {
-			app.setApplicationStatus(ApplicationStatus.upload_Documents);
+			app.setApplicationStatus(ApplicationStatus.UPLOAD_DOCUMENTS);
+			lhi.logStage(app.getId(), officer.getFull_name(), officer.getRole().name(),
+					ApplicationStatus.UPLOAD_DOCUMENTS.name(), "CIBIL check passed, requested document upload");
+			lr.save(app);
+			return "CIBIL Reviewed...Requested for upload documents";
 		}
-
-		lr.save(app);
-
-		return reject ? "Application rejected successfully" : "CIBIL reviewed...Requesting for document upload";
 	}
 
 }

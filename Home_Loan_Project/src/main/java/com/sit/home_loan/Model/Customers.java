@@ -25,7 +25,8 @@ import lombok.Data;
 public class Customers {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long cust_id;
+	@Column(name="cust_id")
+	private Long custId;
 	private String full_name;
 	
 	@Column(unique = true)

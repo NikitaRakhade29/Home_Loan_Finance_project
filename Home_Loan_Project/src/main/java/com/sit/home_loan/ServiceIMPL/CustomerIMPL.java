@@ -1,10 +1,12 @@
 package com.sit.home_loan.ServiceIMPL;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sit.home_loan.DTO.LoanApplicationDTO;
 import com.sit.home_loan.DTO.LoanApplicationDetailsDTO;
 import com.sit.home_loan.Enum.ApplicationStatus;
+import com.sit.home_loan.Enum.DocumentType;
+import com.sit.home_loan.Enum.VerficationStatus;
+import com.sit.home_loan.Model.CustomerDocuments;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanApplication;
 import com.sit.home_loan.Model.User;
 import com.sit.home_loan.Repository.CustomerRepo;
+import com.sit.home_loan.Repository.DocumentsRepo;
 import com.sit.home_loan.Repository.LoanApplicationRepo;
 import com.sit.home_loan.Repository.LoanStageHistoryRepo;
 import com.sit.home_loan.Repository.UserRepo;
@@ -37,6 +43,11 @@ public class CustomerIMPL implements CustomerI {
 
 	@Autowired
 	private LoanStageHistoryI loanStageHistoryService;
+	
+	@Autowired
+	DocumentsRepo dr;
+	
+	private final String uploadDir = "F:/Upload_Documents";
 
 	@Override
 	public Customers getProfile(String email) {
@@ -95,12 +106,12 @@ public class CustomerIMPL implements CustomerI {
 			loan.setAccount_holder_name(loanDTO.getAccount_holder_name());
 			loan.setApplication_date(LocalDate.now());
 			loan.setCustomer(customer);
-			loan.setApplicationStatus(ApplicationStatus.Pending);
+			loan.setApplicationStatus(ApplicationStatus.PENDING);
 
 			lr.save(loan);
 
 			loanStageHistoryService.logStage(loan.getId(), customer.getUser().getFull_name(),
-					customer.getUser().getRole().name(), ApplicationStatus.Pending.name(),
+					customer.getUser().getRole().name(), ApplicationStatus.PENDING.name(),
 					"loan applied with Cibil: " + cibilScore);
 
 			return "Loan application submitted successfully. CIBIL Score: " + cibilScore;
@@ -183,6 +194,46 @@ public class CustomerIMPL implements CustomerI {
 		}
 		lr.deleteAll(applications);
 		return "Loan application deleted successfully by " + email;
+	}
+
+	@Override
+	public String uploadDocument(MultipartFile file, String email, DocumentType documentType) {
+		Optional<Customers> customerOpt = cr.findByUserEmail(email);
+		
+		if(customerOpt.isEmpty()) {
+			return "Customer not Found";
+		}
+		
+		try {
+			File uploadFolder = new File(uploadDir);
+			if(!uploadFolder.exists()) {
+				uploadFolder.mkdirs();
+			}
+			String fileName = UUID.randomUUID()+"_"+file.getOriginalFilename();
+			File dest = new File(uploadDir, fileName);
+			file.transferTo(dest);
+			
+			CustomerDocuments cdoc = new CustomerDocuments();
+			cdoc.setCustomer(customerOpt.get());
+			cdoc.setFileUrl(dest.getAbsolutePath());
+			cdoc.setFilename(file.getOriginalFilename());
+			cdoc.setUploadDate(LocalDate.now());
+			cdoc.setDocumentType(documentType);
+			cdoc.setVerficationStatus(VerficationStatus.PENDING);
+			
+			dr.save(cdoc);
+			
+			List<LoanApplication> application = lr.findByCustomerEmail(email);
+			if(application.isEmpty()) {
+				LoanApplication latest = application.get(application.size() - 1);
+				latest.setApplicationStatus(ApplicationStatus.DOCUMENT_UPLOADED);
+				lr.save(latest);
+			}
+			
+			return "Document Uploaded Successfully";
+		}catch (Exception e) {
+			return "File Upload Failed! ";
+		}
 	}
 
 }
