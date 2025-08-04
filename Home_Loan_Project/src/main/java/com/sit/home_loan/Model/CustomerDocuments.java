@@ -3,7 +3,7 @@ package com.sit.home_loan.Model;
 import java.time.LocalDate;
 
 import com.sit.home_loan.Enum.DocumentType;
-import com.sit.home_loan.Enum.VerficationStatus;
+import com.sit.home_loan.Enum.VerificationStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -24,7 +25,13 @@ public class CustomerDocuments {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private String fileUrl;
+	@Lob
+	@Column(name = "file_data", columnDefinition = "LONGBLOB")
+	private byte[] fileData;
+	
+	@Column(name = "file_type")
+	private String fileType;
+	
 	private LocalDate uploadDate;
 	
 	@Column(name="file_name")
@@ -34,7 +41,7 @@ public class CustomerDocuments {
 	private DocumentType documentType;
 	
 	@Enumerated(EnumType.STRING)
-	private VerficationStatus verficationStatus;
+	private VerificationStatus verificationStatus;
 	
 	@ManyToOne
 	private Customers customer;

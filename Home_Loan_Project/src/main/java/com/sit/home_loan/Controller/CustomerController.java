@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sit.home_loan.DTO.LoanApplicationDTO;
 import com.sit.home_loan.DTO.LoanApplicationDetailsDTO;
 import com.sit.home_loan.Enum.DocumentType;
+import com.sit.home_loan.Model.CustomerDocuments;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanApplication;
 import com.sit.home_loan.Model.User;
@@ -64,5 +65,11 @@ public class CustomerController {
 	public String uploadDocument(@RequestParam ("file") MultipartFile file, @RequestParam ("email") String email, @RequestParam ("type") DocumentType documentType) {
 		return ci.uploadDocument(file, email, documentType);	
 	}
+	
+	@GetMapping("/my-documents")
+	public List<CustomerDocuments> getDocuments(@RequestParam String email) {
+		return ci.myDocuments(email);
+	}
+	
 	
 }

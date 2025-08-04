@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sit.home_loan.DTO.DocumentsDTO;
+import com.sit.home_loan.DTO.LoanWithDocumentsDTO;
 import com.sit.home_loan.Model.CustomerDocuments;
+import com.sit.home_loan.Model.LoanApplication;
 import com.sit.home_loan.Service.CreditManagerI;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,9 +22,14 @@ public class CreditManagerController {
 	@Autowired
 	CreditManagerI cmi;
 
-	@GetMapping("/documents/by-customer")
-	public List<DocumentsDTO> getDocumentsByCustomerId(@RequestParam Long customerId) {
-		return cmi.getDocumentsByCustomerId(customerId);
+	@GetMapping("loan-applications/submitted")
+	public List<LoanApplication> getSumbittedApplications() {
+		return cmi.getApplicationsWithDocumentsSumbmitted();
+	}
+
+	@GetMapping("loan-with-documents/{loanAppId}")
+	public LoanWithDocumentsDTO getloanWithDocuments(@RequestParam Long loanAppId) {
+		return cmi.getLoanWithDocuments(loanAppId);
 	}
 
 }

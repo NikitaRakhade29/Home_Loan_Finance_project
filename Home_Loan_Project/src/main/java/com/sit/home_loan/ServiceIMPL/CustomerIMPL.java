@@ -1,11 +1,15 @@
+  
 package com.sit.home_loan.ServiceIMPL;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +20,7 @@ import com.sit.home_loan.DTO.LoanApplicationDTO;
 import com.sit.home_loan.DTO.LoanApplicationDetailsDTO;
 import com.sit.home_loan.Enum.ApplicationStatus;
 import com.sit.home_loan.Enum.DocumentType;
-import com.sit.home_loan.Enum.VerficationStatus;
+import com.sit.home_loan.Enum.VerificationStatus;
 import com.sit.home_loan.Model.CustomerDocuments;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanApplication;
@@ -198,42 +202,58 @@ public class CustomerIMPL implements CustomerI {
 
 	@Override
 	public String uploadDocument(MultipartFile file, String email, DocumentType documentType) {
-		Optional<Customers> customerOpt = cr.findByUserEmail(email);
+		Optional<Customers> customerOpt= cr.findByUserEmail(email);
 		
-		if(customerOpt.isEmpty()) {
-			return "Customer not Found";
+		if(!customerOpt.isPresent()) {
+			return "Cutomer not Found!";
 		}
 		
 		try {
-			File uploadFolder = new File(uploadDir);
-			if(!uploadFolder.exists()) {
-				uploadFolder.mkdirs();
-			}
-			String fileName = UUID.randomUUID()+"_"+file.getOriginalFilename();
-			File dest = new File(uploadDir, fileName);
-			file.transferTo(dest);
+			byte[] fileBytes = file.getBytes();
 			
-			CustomerDocuments cdoc = new CustomerDocuments();
-			cdoc.setCustomer(customerOpt.get());
-			cdoc.setFileUrl(dest.getAbsolutePath());
-			cdoc.setFilename(file.getOriginalFilename());
-			cdoc.setUploadDate(LocalDate.now());
-			cdoc.setDocumentType(documentType);
-			cdoc.setVerficationStatus(VerficationStatus.PENDING);
+			CustomerDocuments doc = new CustomerDocuments();
+			doc.setCustomer(customerOpt.get());
+			doc.setFileData(fileBytes);
+			doc.setFilename(file.getOriginalFilename());
+			doc.setFileType(file.getContentType());
+			doc.setUploadDate(LocalDate.now());
+			doc.setDocumentType(documentType);
+			doc.setVerificationStatus(VerificationStatus.PENDING);
 			
-			dr.save(cdoc);
+			dr.save(doc);
 			
-			List<LoanApplication> application = lr.findByCustomerEmail(email);
-			if(application.isEmpty()) {
-				LoanApplication latest = application.get(application.size() - 1);
-				latest.setApplicationStatus(ApplicationStatus.DOCUMENT_UPLOADED);
+			List<LoanApplication> applications=lr.findByCustomerEmail(email);
+			
+			if(applications != null && !applications.isEmpty()) {
+				LoanApplication latest = applications.get(applications.size() -  1);
+				
+				if (latest.getApplicationStatus() == ApplicationStatus.REJECTED) {
+			        return "Cannot upload documents for a rejected application.";
+			    }
+				
+				List<CustomerDocuments> uploadDocs = dr.findByCustomerEmail(email);
+				Set<DocumentType> uploadTypes = new HashSet<>();
+				
+				for (CustomerDocuments d : uploadDocs) {
+					uploadTypes.add(d.getDocumentType());
+				}
+				
+				if(!uploadTypes.isEmpty()) {
+					if(latest.getApplicationStatus().ordinal() < ApplicationStatus.DOCUMENT_UPLOADED.ordinal()) {
+						latest.setApplicationStatus(ApplicationStatus.DOCUMENT_UPLOADED);
+					}
+				}
 				lr.save(latest);
 			}
-			
 			return "Document Uploaded Successfully";
-		}catch (Exception e) {
-			return "File Upload Failed! ";
+		}catch (IOException e) {
+			return "File Upload Failed!";
 		}
 	}
-
+	
+	@Override
+	public List<CustomerDocuments> myDocuments(String email) {
+		return dr.findByCustomerEmail(email);
+	}
+	
 }
