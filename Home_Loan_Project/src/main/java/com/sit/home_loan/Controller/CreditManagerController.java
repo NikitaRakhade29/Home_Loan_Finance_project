@@ -27,9 +27,21 @@ public class CreditManagerController {
 		return cmi.getApplicationsWithDocumentsSumbmitted();
 	}
 
-	@GetMapping("loan-with-documents/{loanAppId}")
-	public LoanWithDocumentsDTO getloanWithDocuments(@RequestParam Long loanAppId) {
+	@GetMapping("/loan-with-documents/{loanAppId}")
+	public LoanWithDocumentsDTO getLoanWithDocuments(@PathVariable Long loanAppId) {
 		return cmi.getLoanWithDocuments(loanAppId);
+	}
+
+	@PutMapping("/documents/verify/{id}")
+	public String updateDocumentStatus(@PathVariable Long id, @RequestParam String status) {
+		cmi.updateVerificationStatus(id, status);
+		return "Document status is updated to: " + status.toUpperCase();
+	}
+	
+	@PutMapping("/evaluate/{loanAppId}")
+	public String evaluateLoan(@PathVariable Long loanAppId) {
+		cmi.evaluateLoanApplication(loanAppId);
+		return "Loan Application Evaluated Sucessfully";
 	}
 
 }

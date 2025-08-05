@@ -26,7 +26,7 @@ import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanApplication;
 import com.sit.home_loan.Model.User;
 import com.sit.home_loan.Repository.CustomerRepo;
-import com.sit.home_loan.Repository.DocumentsRepo;
+import com.sit.home_loan.Repository.DocumentRepo;
 import com.sit.home_loan.Repository.LoanApplicationRepo;
 import com.sit.home_loan.Repository.LoanStageHistoryRepo;
 import com.sit.home_loan.Repository.UserRepo;
@@ -49,7 +49,7 @@ public class CustomerIMPL implements CustomerI {
 	private LoanStageHistoryI loanStageHistoryService;
 	
 	@Autowired
-	DocumentsRepo dr;
+	DocumentRepo dr;
 	
 	private final String uploadDir = "F:/Upload_Documents";
 
@@ -231,7 +231,7 @@ public class CustomerIMPL implements CustomerI {
 			        return "Cannot upload documents for a rejected application.";
 			    }
 				
-				List<CustomerDocuments> uploadDocs = dr.findByCustomerEmail(email);
+				List<CustomerDocuments> uploadDocs = dr.findByCustomer_Email(email);
 				Set<DocumentType> uploadTypes = new HashSet<>();
 				
 				for (CustomerDocuments d : uploadDocs) {
@@ -253,7 +253,7 @@ public class CustomerIMPL implements CustomerI {
 	
 	@Override
 	public List<CustomerDocuments> myDocuments(String email) {
-		return dr.findByCustomerEmail(email);
+		return dr.findByCustomer_Email(email);
 	}
 	
 }

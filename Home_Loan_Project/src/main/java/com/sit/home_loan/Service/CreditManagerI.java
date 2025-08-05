@@ -10,4 +10,6 @@ import com.sit.home_loan.Model.LoanApplication;
 public interface CreditManagerI {
 	List<LoanApplication> getApplicationsWithDocumentsSumbmitted();
 	LoanWithDocumentsDTO getLoanWithDocuments(long loanAppId);
+	void updateVerificationStatus(Long documentId, String status);
+	void evaluateLoanApplication(long loanAppId);
 }
