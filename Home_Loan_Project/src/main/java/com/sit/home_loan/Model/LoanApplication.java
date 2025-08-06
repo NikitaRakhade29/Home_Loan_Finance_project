@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sit.home_loan.Enum.ApplicationStatus;
 
 import jakarta.persistence.CascadeType;
@@ -21,7 +22,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="Loan-Application")
+@Table(name = "Loan-Application")
 public class LoanApplication {
 
 	@Id
@@ -41,7 +42,7 @@ public class LoanApplication {
 	private String account_holder_name;
 	private String application_rejection_reason;
 	private LocalDate application_date;
-	
+
 	@Enumerated(EnumType.STRING)
 	private ApplicationStatus applicationStatus;
 
@@ -49,8 +50,17 @@ public class LoanApplication {
 	@JoinColumn(name = "customer_id")
 	@JsonBackReference
 	private Customers customer;
-	
+
 	@OneToOne(mappedBy = "loanApplication", cascade = CascadeType.ALL)
+	@JsonManagedReference("loan-credit")
 	private CreditEvalution creditEvaluation;
+
+	@OneToOne(mappedBy = "loanApplication", cascade = CascadeType.ALL)
+	@JsonManagedReference("loan-sanction")
+	private SanctionLetter sanctionLetter;
+	
+    @OneToOne(mappedBy = "loanApplication", cascade = CascadeType.ALL)
+    @JsonManagedReference("loan-disburse")
+	private Disbursement disbursement;
 
 }

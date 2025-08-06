@@ -1,5 +1,6 @@
 package com.sit.home_loan.ServiceIMPL;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +17,12 @@ import com.sit.home_loan.Model.CreditEvalution;
 import com.sit.home_loan.Model.CustomerDocuments;
 import com.sit.home_loan.Model.Customers;
 import com.sit.home_loan.Model.LoanApplication;
+import com.sit.home_loan.Model.SanctionLetter;
 import com.sit.home_loan.Repository.CreditEvalutionRepo;
 import com.sit.home_loan.Repository.CreditManagerRepo;
 import com.sit.home_loan.Repository.DocumentRepo;
 import com.sit.home_loan.Repository.LoanApplicationRepo;
+import com.sit.home_loan.Repository.SanctionLetterRepo;
 import com.sit.home_loan.Service.CreditManagerI;
 import com.sit.home_loan.Service.LoanStageHistoryI;
 
@@ -40,6 +43,9 @@ public class CreditManagerIMPL implements CreditManagerI {
 
 	@Autowired
 	CreditEvalutionRepo cer;
+
+	@Autowired
+	SanctionLetterRepo sr;
 
 	@Override
 	public List<LoanApplication> getApplicationsWithDocumentsSumbmitted() {
@@ -130,6 +136,41 @@ public class CreditManagerIMPL implements CreditManagerI {
 
 		li.logStage(loanApp.getId(), "credit Manager", "CREDIT_MANAGER", ApplicationStatus.EVALUATED.name(),
 				"Loan eligibity evaluted by credit manager");
+	}
+
+	@Override
+	public SanctionLetter generateSanctionLetter(long loanAppId, SanctionLetter letters) {
+		Optional<LoanApplication> loanOpt = lr.findById(loanAppId);
+
+		if (!loanOpt.isPresent()) {
+			throw new RuntimeException("Loan Application not found");
+		}
+
+		LoanApplication loanApp = loanOpt.get();
+		SanctionLetter letter = new SanctionLetter();
+		letter.setLoanApplication(loanApp);
+		letter.setIssueDate(LocalDate.now());
+		letter.setSanctionAmount(letters.getSanctionAmount());
+		letter.setInterestRate(letters.getInterestRate());
+		letter.setTendureInMonths(letters.getTendureInMonths());
+		letter.setEmiScheduleFileUrl(letters.getEmiScheduleFileUrl());
+
+		SanctionLetter saveLetter = sr.save(letter);
+
+		loanApp.setSanctionLetter(saveLetter);
+		loanApp.setApplicationStatus(ApplicationStatus.SANCTIONED);
+		lr.save(loanApp);
+
+		LoanApplication app = lr.findById(loanAppId).orElse(null);
+		if (app != null) {
+			app.setApplicationStatus(ApplicationStatus.SANCTIONED);
+			lr.save(app);
+
+			li.logStage(app.getId(), "Credit Manager", "CREDIT_MANAGER", ApplicationStatus.SANCTIONED.name(),
+					"Sanction letter issued");
+		}
+
+		return saveLetter;
 	}
 
 }

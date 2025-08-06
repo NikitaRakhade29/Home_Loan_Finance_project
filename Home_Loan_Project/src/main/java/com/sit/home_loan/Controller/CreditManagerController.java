@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sit.home_loan.DTO.LoanWithDocumentsDTO;
 import com.sit.home_loan.Model.CustomerDocuments;
 import com.sit.home_loan.Model.LoanApplication;
+import com.sit.home_loan.Model.SanctionLetter;
 import com.sit.home_loan.Service.CreditManagerI;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/CreditManager")
@@ -42,6 +44,11 @@ public class CreditManagerController {
 	public String evaluateLoan(@PathVariable Long loanAppId) {
 		cmi.evaluateLoanApplication(loanAppId);
 		return "Loan Application Evaluated Sucessfully";
+	}
+	
+	@PostMapping("/sanction/{loanAppId}")
+	public SanctionLetter generateSanction(@PathVariable Long loanAppId, @RequestBody SanctionLetter request){
+		return cmi.generateSanctionLetter(loanAppId,request);
 	}
 
 }

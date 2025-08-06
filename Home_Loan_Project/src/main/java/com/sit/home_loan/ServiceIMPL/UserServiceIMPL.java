@@ -33,8 +33,8 @@ public class UserServiceIMPL implements UserServiceI {
 		}
 
 // ONLY ALLOW TO CREATE MULTIPLE CUSTOMERS AND ONLY SINGLE OFFICER
-		if (user.getRole() == Roles.Loan_Officer || user.getRole() == Roles.Credit_Manager
-				|| user.getRole() == Roles.Disbursement_Manager) {
+		if (user.getRole() == Roles.LOAN_OFFICER || user.getRole() == Roles.CREDIT_MANAGER
+				|| user.getRole() == Roles.DISBURSEMENT_MANAGER) {
 
 			boolean checkrole = ur.existsByRole(user.getRole());
 			if (checkrole) {
@@ -59,7 +59,7 @@ public class UserServiceIMPL implements UserServiceI {
 //			cr.save(customer);
 //		}
 		
-	    if (user.getRole() == Roles.Customer) {
+	    if (user.getRole() == Roles.CUSTOMER) {
 	        Customers customer = new Customers();
 	        customer.setUser(user);
 	        customer.setFull_name(user.getFull_name());

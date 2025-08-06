@@ -1,7 +1,8 @@
 package com.sit.home_loan.Model;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,21 +14,18 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "credit_evalution")
-public class CreditEvalution {
-	
+@Table(name = "disbursement")
+public class Disbursement {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private long id;
 	
-	private double debtToIncomeRatio;
-	private double approvedAmount;
-	private double interestRate;
-	private String evalutionRemarks;
-	private String evalutionStatus;
+	private Double disbursementAmount;
+	private LocalDate disbursementDate;
+	private String disbursementStatus;
 	
-	@OneToOne
-	@JsonBackReference("loan-credit")
+    @OneToOne
+    @JsonBackReference("loan-disburse")
 	private LoanApplication loanApplication;
 
 }
