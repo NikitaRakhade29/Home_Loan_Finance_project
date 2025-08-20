@@ -6,5 +6,5 @@ import com.sit.home_loan.Model.User;
 
 public interface UserServiceI {
 	String register(User user);
-	User loginuser(String email, String password, Roles role);
+	User loginuser(String email, String password);
 }

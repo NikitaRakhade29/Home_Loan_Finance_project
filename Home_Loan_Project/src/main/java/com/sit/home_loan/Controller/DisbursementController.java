@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sit.home_loan.Model.Disbursement;
 import com.sit.home_loan.Model.LoanApplication;
 import com.sit.home_loan.Service.DisbursementI;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/disbursement")
+@CrossOrigin("*")
 public class DisbursementController {
 
 	@Autowired

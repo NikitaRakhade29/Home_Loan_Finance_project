@@ -3,6 +3,7 @@ package com.sit.home_loan.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import com.sit.home_loan.Service.LoanStageHistoryI;
 
 @RestController
 @RequestMapping("/loan-history")
+@CrossOrigin("*")
 public class LoanStageHistoryController {
 
 	@Autowired

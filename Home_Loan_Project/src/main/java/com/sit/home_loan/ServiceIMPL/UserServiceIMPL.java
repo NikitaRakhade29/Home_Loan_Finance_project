@@ -76,7 +76,7 @@ public class UserServiceIMPL implements UserServiceI {
 	}
 
 	@Override
-	public User loginuser(String email, String password, Roles role) {
+	public User loginuser(String email, String password) {
 		Optional<User> checkEmail = ur.findByEmail(email);
 
 		if (!checkEmail.isPresent()) {
@@ -87,10 +87,6 @@ public class UserServiceIMPL implements UserServiceI {
 
 		if (!BCrypt.checkpw(password, user.getPassword())) {
 			throw new RuntimeException("Incorrect password.");
-		}
-
-		if (!role.equals(user.getRole())) {
-			throw new RuntimeException("Invalid role :( Try again ");
 		}
 		return user;
 	}
